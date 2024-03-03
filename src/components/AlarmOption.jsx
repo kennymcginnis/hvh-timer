@@ -3,7 +3,6 @@ import useSelect from '../hooks/useSelect'
 import { AlarmContext } from '../context/Alarm'
 import './alarmOption.css'
 import { energyNumber } from '../utils/fixNumber'
-import { addMinutes } from 'date-fns'
 
 const adventurePasses = ['No Pass', 'Premium', 'Legend']
 const alarmTypes = ['1-Run', 'Arena', 'Full']
