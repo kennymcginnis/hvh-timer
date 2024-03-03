@@ -53,13 +53,17 @@ function Alarm({ children }) {
 
 		const minutes = (targetEnergy - Number(energy)) * rechargeRateInMinutes
 		setAlarmTime(addMinutes(new Date(), minutes))
-		setDistanceUntilAlarm(formatDistance(new Date(), alarmTime))
+		formatTimeRemaining()
 	}
 
 	const calculateCoinRush = ({ pass }) => {
 		const coinRushMinutes = pass === 'Legend' ? 2.5 : 5
 		setAlarmTime(addMinutes(new Date(), coinRushMinutes))
-		setDistanceUntilAlarm(formatDistance(new Date(), alarmTime))
+		formatTimeRemaining()
+	}
+
+	const formatTimeRemaining = () => {
+		setDistanceUntilAlarm(formatDistance(new Date(), alarmTime, { includeSeconds: true }))
 	}
 
 	useInterval(() => {
@@ -91,7 +95,7 @@ function Alarm({ children }) {
 			const now = new Date()
 			const alarmDate = new Date(alarmTime)
 			setTimeRemaining(differenceInSeconds(now, alarmDate))
-			setDistanceUntilAlarm(formatDistance(now, alarmDate))
+			formatTimeRemaining()
 		}
 	}, 1000)
 
