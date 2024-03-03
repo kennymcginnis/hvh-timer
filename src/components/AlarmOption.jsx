@@ -1,72 +1,82 @@
-import React, { useContext } from 'react';
-import { minutesNumber, hourNumber } from '../utils/fixNumber';
-import useSelect from '../hooks/useSelect';
-import { AlarmContext } from '../context/Alarm';
-import './alarmOption.css';
+import React, { useContext } from 'react'
+import useSelect from '../hooks/useSelect'
+import { AlarmContext } from '../context/Alarm'
+import './alarmOption.css'
+import { energyNumber } from '../utils/fixNumber'
+import { addMinutes } from 'date-fns'
+
+const adventurePasses = ['No Pass', 'Premium', 'Legend']
+const alarmTypes = ['1-Run', 'Arena', 'Full']
 
 const AlarmOption = () => {
-  const [hour, setHour] = useSelect('Hour');
-  const [minutes, setMinutes] = useSelect('Minutes');
-  const [amPmOption, setAmPmOption] = useSelect('AM/PM');
-  const { setAlarmTime, pauseAlarm, hasAlarm, setHasAlarm } =
-    useContext(AlarmContext);
+	const [pass, setPass] = useSelect('Premium')
+	const [energy, setEnergy] = useSelect('Energy')
+	const [alarmType, setAlarmType] = useSelect('Full')
+	const alarmContext = useContext(AlarmContext)
+	const { hasAlarm, pauseAlarm, setHasAlarm, calculateAlarmTime, calculateCoinRush } = alarmContext
 
-  const setAlarm = () => {
-    // Toggle alarm OFF
-    if (hasAlarm) {
-      pauseAlarm();
-      setHasAlarm(false);
-      return;
-    }
-    // Toggle alarm ON
-    if (
-      !hour.includes('Hour') &&
-      !minutes.includes('Minutes') &&
-      !amPmOption.includes('AM/PM')
-    ) {
-      setHasAlarm(true);
-      setAlarmTime(`${hour}:${minutes} ${amPmOption}`);
-    }
-  };
-  return (
-    <div className="option-container">
-      <div className={`wrapper-option ${hasAlarm && 'disable'}`}>
-        <select {...setHour}>
-          <option disabled value="Hour">
-            Hour
-          </option>
-          {hourNumber.map((hour, index) => (
-            <option key={index} value={hour}>
-              {hour}
-            </option>
-          ))}
-        </select>
-        <select {...setMinutes}>
-          <option disabled value="Minutes">
-            Minutes
-          </option>
-          {minutesNumber.map((minutes, index) => (
-            <option key={index} value={minutes}>
-              {minutes}
-            </option>
-          ))}
-        </select>
-        <select {...setAmPmOption}>
-          <option disabled value="AM/PM">
-            AM/PM
-          </option>
-          <option value="AM">AM</option>
-          <option value="PM">PM</option>
-        </select>
-      </div>
-      <button
-        onClick={setAlarm}
-        className={`setAlarm-btn ${hasAlarm && 'play'}`}
-      >
-        {hasAlarm ? 'Clear Alarm' : 'Set Alarm'}
-      </button>
-    </div>
-  );
-};
+	const handleClearAlarm = () => {
+		pauseAlarm()
+		setHasAlarm(false)
+	}
+	const handleCalculateAlarm = () => {
+		setHasAlarm(true)
+		calculateAlarmTime({ pass, energy, alarmType })
+	}
+	const handleCoinRushAlarm = () => {
+		setHasAlarm(true)
+		calculateCoinRush({ pass })
+	}
 
-export default AlarmOption;
+	return (
+		<div className="option-container">
+			{/* <pre>{JSON.stringify({ ...alarmContext, pass, energy, alarmType }, null, 2)}</pre> */}
+			<div className={`wrapper-option ${hasAlarm && 'disable'}`}>
+				<select {...setPass}>
+					{adventurePasses.map((pass, index) => (
+						<option key={index} value={pass}>
+							{pass}
+						</option>
+					))}
+				</select>
+				<select {...setEnergy}>
+					<option disabled value="Energy">
+						Energy
+					</option>
+					{energyNumber.map((energy, index) => (
+						<option key={index} value={energy}>
+							{energy}
+						</option>
+					))}
+				</select>
+				<select {...setAlarmType}>
+					{alarmTypes.map((pass, index) => (
+						<option key={index} value={pass}>
+							{pass}
+						</option>
+					))}
+				</select>
+			</div>
+			{hasAlarm ? (
+				<button onClick={handleClearAlarm} className="setAlarm-btn play">
+					{'Clear Alarm'}
+				</button>
+			) : (
+				<>
+					<button
+						disabled={energy === 'Energy'}
+						onClick={handleCalculateAlarm}
+						className={`setAlarm-btn ${energy === 'Energy' && 'disable'}`}
+					>
+						{'Calculate Alarm'}
+					</button>
+					<button onClick={handleCoinRushAlarm} className="setAlarm-btn">
+						{'Coin Rush Alarm'}
+					</button>
+				</>
+			)}
+		</div>
+	)
+}
+
+export default AlarmOption
