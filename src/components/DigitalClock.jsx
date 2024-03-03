@@ -16,7 +16,7 @@ const DigitalClock = () => {
 			</div>
 			<div className="clock-date">
 				<span>{`${dayNow} `}</span>
-				<span>{`${monthNow} , `}</span>
+				<span>{`${monthNow}, `}</span>
 				<span>{yearNow}</span>
 			</div>
 
